@@ -8,17 +8,15 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/FactomProject/basen"
 	btcutil "github.com/FactomProject/btcutilecc"
+	"github.com/mr-tron/base58"
+
 	"golang.org/x/crypto/ripemd160"
 )
 
 var (
 	curve       = btcutil.Secp256k1()
 	curveParams = curve.Params()
-
-	// BitcoinBase58Encoding is the encoding used for bitcoin addresses
-	BitcoinBase58Encoding = basen.NewEncoding("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
 )
 
 //
@@ -91,12 +89,15 @@ func addChecksumToBytes(data []byte) ([]byte, error) {
 	return append(data, checksum...), nil
 }
 
+// base58Encode note that BitcoinBase58Encoding is the encoding used for bitcoin addresses
 func base58Encode(data []byte) string {
-	return BitcoinBase58Encoding.EncodeToString(data)
+	// return BitcoinBase58Encoding.EncodeToString(data)
+	return base58.TrivialBase58EncodingAlphabet(data, base58.BTCAlphabet)
 }
 
 func base58Decode(data string) ([]byte, error) {
-	return BitcoinBase58Encoding.DecodeString(data)
+	// return BitcoinBase58Encoding.DecodeString(data)
+	return base58.TrivialBase58DecodingAlphabet(data, base58.BTCAlphabet)
 }
 
 // Keys
@@ -192,6 +193,7 @@ func validateChildPublicKey(key []byte) error {
 //
 // Numerical
 //
+
 func uint32Bytes(i uint32) []byte {
 	bytes := make([]byte, 4)
 	binary.BigEndian.PutUint32(bytes, i)
